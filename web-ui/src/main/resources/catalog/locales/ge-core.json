@@ -133,6 +133,7 @@
     "owner": "Eigentümer",
     "privilegesUpdated": "Privilegien wurden aktualisiert.",
     "privilegesUpdatedError": "Ein Fehler ist während der Aktualisierung der Privilegien eingetreten.",
+    "key": "Zugangsschlüssel",
     "password": "Passwort",
     "passwordMinlength": "Passwort muss mindestens 6 Buchstaben enthalten!",
     "passwordNotMatching": "Das Passwort stimmt nicht!",

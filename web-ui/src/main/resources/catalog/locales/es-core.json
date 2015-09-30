@@ -133,6 +133,7 @@
     "owner": "Dueño",
     "privilegesUpdated": "Privilegios actualizados.",
     "privilegesUpdatedError": "Ocurrió un error actualizando los privilegios.",
+    "key": "Clave de acceso",
     "password": "Contraseña",
     "passwordMinlength": "¡La contraseña debe tener al menos 6 caracteres!",
     "passwordNotMatching": "¡Las contraseñas no coinciden!",

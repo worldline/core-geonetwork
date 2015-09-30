@@ -133,6 +133,7 @@
     "owner": "Propriétaire",
     "privilegesUpdated": "Privilèges mis à jour.",
     "privilegesUpdatedError": "Échec lors de la sauvegarde des privilèges.",
+    "key": "Clé d'accès",
     "password": "Mot de passe",
     "passwordMinlength": "Le mot de passe doit contenir au moins 6 caractères !",
     "passwordNotMatching": "Les mots de passe ne correspondent pas !",
