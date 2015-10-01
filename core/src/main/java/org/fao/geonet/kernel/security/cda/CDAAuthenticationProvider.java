@@ -73,13 +73,14 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
             throws AuthenticationException {
         try {
             final ConfigurableApplicationContext applicationContext = ApplicationContextHolder.get();
+            CdaConfiguration configuration = ApplicationContextHolder.get().getBean(CdaConfiguration.class);
             UserRepository userRepository = applicationContext.getBean(UserRepository.class);
 
             // Cast the token to the one we wanted...
             // It is useful so we don't have to recreate this complete class...
             CdaAuthenticationToken authenticationToken = (CdaAuthenticationToken) authentication;
 
-            String uri = "http://services.data.shom.fr/" + authenticationToken.getKey().toString() + "/checkaccess";
+            String uri = configuration.getUri().replace(":key", authenticationToken.getKey().toString());
 
             // Encoding of the username and password to base64
             String auth = Base64.encodeBase64String((username + ':' + authenticationToken.getCredentials().toString()).getBytes());

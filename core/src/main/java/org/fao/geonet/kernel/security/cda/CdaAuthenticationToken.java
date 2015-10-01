@@ -27,22 +27,6 @@ public class CdaAuthenticationToken extends UsernamePasswordAuthenticationToken 
         this.key = key;
     }
 
-    /**
-     * This constructor should only be used by <code>AuthenticationManager</code> or <code>AuthenticationProvider</code>
-     * implementations that are satisfied with producing a trusted (i.e. {@link #isAuthenticated()} = <code>true</code>)
-     * authentication token.
-     *
-     * @param principal
-     * @param credentials
-     * @param authorities
-     * @param key
-     */
-    public CdaAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, Object key) {
-        super(principal, credentials, authorities);
-
-        this.key = key;
-    }
-
     public Object getKey() {
         return this.key;
     }

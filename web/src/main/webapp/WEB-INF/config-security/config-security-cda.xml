@@ -10,9 +10,16 @@
 	xmlns:sec="http://www.springframework.org/schema/security" xmlns:ctx="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans">
 
-	<!--<ctx:property-override
+	<ctx:property-override
 			location="WEB-INF/config-security/config-security-cda-overrides.properties"
-			ignore-resource-not-found="true" />-->
+			ignore-resource-not-found="true" />
+
+	<!-- Configuration bean -->
+	<!-- You may customize the following values by editing the file config-security-cda-overrides.properties -->
+	<bean id="cdaConfiguration"
+		  class="org.fao.geonet.kernel.security.cda.CdaConfiguration">
+		<property name="uri" value="${cdaConfiguration.uri}" />
+	</bean>
 
 	<bean id="cdaAuthenticationProvider"
 		  class="org.fao.geonet.kernel.security.cda.CdaAuthenticationProvider">
