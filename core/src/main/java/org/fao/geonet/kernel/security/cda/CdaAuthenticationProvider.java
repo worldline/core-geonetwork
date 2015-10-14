@@ -47,7 +47,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class CdaAuthenticationProvide extends AbstractUserDetailsAuthenticationProvider
+public class CdaAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider
         implements UserDetailsService {
 
     private static final String CDA_FLAG = "CDA";
