@@ -27,7 +27,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.fao.geonet.ApplicationContextHolder;
 import org.fao.geonet.domain.Profile;
 import org.fao.geonet.domain.User;
@@ -78,72 +77,79 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
 
             // Cast the token to the one we wanted...
             // It is useful so we don't have to recreate this complete class...
-            CdaAuthenticationToken authenticationToken = (CdaAuthenticationToken) authentication;
+            if(authentication instanceof CdaAuthenticationToken) {
+                CdaAuthenticationToken authenticationToken = (CdaAuthenticationToken) authentication;
 
-            String uri = configuration.getUri().replace(":key", authenticationToken.getKey().toString());
+                String uri = configuration.getUri().replace(":key", authenticationToken.getKey().toString());
 
-            // Encoding of the username and password to base64
-            String auth = Base64.encodeBase64String((username + ':' + authenticationToken.getCredentials().toString()).getBytes());
+                // Encoding of the username and password to base64
+                String auth = Base64.encodeBase64String((username + ':' + authenticationToken.getCredentials().toString()).getBytes());
 
-            HttpClient client = new DefaultHttpClient();
+                HttpClient client = new DefaultHttpClient();
 
-            HttpPost request = new HttpPost(uri);
-            request.addHeader("Authorization", "Basic " + auth);
+                HttpPost request = new HttpPost(uri);
+                request.addHeader("Authorization", "Basic " + auth);
 
-            // Sending the request
-            HttpResponse response = client.execute(request);
+                // Sending the request
+                HttpResponse response = client.execute(request);
 
-            int code = response.getStatusLine().getStatusCode();
+                int code = response.getStatusLine().getStatusCode();
 
-            // If code is 200, the server responded us correctly
-            // else if code is 403, the provided key is not correct
-            // else there is a server side error
-            if (code == 200) {
-                BufferedReader in = new BufferedReader(
+                // If code is 200, the server responded us correctly
+                // else if code is 403, the provided key is not correct
+                // else there is a server side error
+                if (code == 200) {
+                    BufferedReader in = new BufferedReader(
                         new InputStreamReader(response.getEntity().getContent()));
-                String inputLine;
-                StringBuffer buffer = new StringBuffer();
+                    String inputLine;
+                    StringBuffer buffer = new StringBuffer();
 
-                while ((inputLine = in.readLine()) != null) {
-                    buffer.append(inputLine);
-                }
+                    while ((inputLine = in.readLine()) != null) {
+                        buffer.append(inputLine);
+                    }
 
-                in.close();
+                    in.close();
 
-                String data = buffer.toString();
+                    String data = buffer.toString();
 
-                if (data.equals("OK")) {
-                    User user = userRepository.findOneByUsername(username);
+                    if (data.equals("OK")) {
+                        User user = userRepository.findOneByUsername(username);
 
-                    if (user != null && !user.getSecurity().getAuthType().equalsIgnoreCase(CDA_FLAG)) {
-                        throw new AuthenticationServiceException(
+                        if (user != null && !user.getSecurity().getAuthType().equalsIgnoreCase(CDA_FLAG)) {
+                            throw new AuthenticationServiceException(
                                 "Trying to authenticate through CDA a user that is not CDA");
-                    }
+                        }
 
-                    if (user == null) // if user does not exists, add one as guest
-                    {
-                        user = new User();
-                        user.setUsername(username);
-                        // We set a profile to registered user, admins will be manually designed
-                        user.setProfile(Profile.RegisteredUser);
-                        user.setName(username);
-                        user.getSecurity().setAuthType(CDA_FLAG);
+                        if (user == null) // if user does not exists, add one as guest
+                        {
+                            user = new User();
+                            user.setUsername(username);
+                            // We set a profile to registered user, admins will be manually designed
+                            user.setProfile(Profile.Administrator);
+                            user.setName(username);
+                            user.getSecurity().setAuthType(CDA_FLAG);
+                            userRepository.saveAndFlush(user);
+                        }
+
+                        user.setProfile(Profile.Administrator);
                         userRepository.saveAndFlush(user);
+
+                        return user;
+                    } else if (data.equals("BAD_CREDENTIALS")) {
+                        throw new BadCredentialsException("Wrong credentials");
                     }
-
-                    user.setProfile(Profile.RegisteredUser);
-                    userRepository.saveAndFlush(user);
-
-                    return user;
-                } else if (data.equals("BAD_CREDENTIALS")) {
-                    throw new BadCredentialsException("Wrong credentials");
-                }
-            } else if (code == 403) {
-                throw new BadCredentialsException(messages.getMessage(
+                } else if (code == 403) {
+                    throw new BadCredentialsException(messages.getMessage(
                         "CdaAuthenticationProvider.wrongCredentials",
                         "The provided key is not known"));
-            } else {
-                throw new AuthenticationServiceException("There was an error when accessing the CDA server");
+                } else {
+                    throw new AuthenticationServiceException("There was an error when accessing the CDA server");
+                }
+            }else{
+                User user = userRepository.findOneByUsername(username);
+                if(user != null){
+                    return user;
+                }
             }
         } catch (Exception e) {
             Log.error(Log.JEEVES, "Unexpected error while loading user", e);
