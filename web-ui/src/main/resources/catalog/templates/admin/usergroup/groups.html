@@ -21,42 +21,44 @@
               data-cache="groups"/>
         </div>
 
-        <button type="button"
-                class="btn btn-primary btn-block"
-                data-ng-click="addGroup()"
-                data-ng-show="user.isAdministratorOrMore()"
-                id="gn-btn-group-add">
-          <i class="fa fa-plus"/>
-          <span data-translate="">newGroup</span>
-        </button>
-      </div>
+        <!-- Desactivate the group add button -->
+        <!--<button type="button"
+              class="btn btn-primary btn-block"
+              data-ng-click="addGroup()"
+              data-ng-show="user.isAdministratorOrMore()"
+              id="gn-btn-group-add">
+        <i class="fa fa-plus"/>
+        <span data-translate="">newGroup</span>
+      </button>-->
     </div>
   </div>
+</div>
 
 
 
-  <div class="col-lg-8" data-ng-hide="groupSelected.id == null">
-    <div class="panel panel-default">
-      <div class="panel-heading"
-        title="{{searchResults.count > 0 ? ('cantDeleteGroupHavingRecords' | translate) : ''}}">
-        <span data-ng-hide="groupSelected.id == ''" data-translate="">updateGroup</span>
-        <span data-ng-hide="groupSelected.id != ''" data-translate="">newGroup</span>
-        <span><strong>{{groupSelected.name}}</strong></span>
-        <div class="btn-toolbar"
-                data-ng-show="user.isAdministratorOrMore()">
-          <button type="button" class="btn btn-primary pull-right"
-            data-ng-disabled="!gnGroupEdit.$valid && !gnGroupEdit.dirty"
-            data-ng-click="saveGroup('#gn-group-edit', '#group-logo-upload')" id="gn-btn-group-save">
-            <i class="fa fa-save"></i>&nbsp;
-            <span data-translate="">saveGroup</span>
-          </button>
-          <button type="button" class="btn pull-right btn-danger"
+<div class="col-lg-8" data-ng-hide="groupSelected.id == null">
+  <div class="panel panel-default">
+    <div class="panel-heading"
+      title="{{searchResults.count > 0 ? ('cantDeleteGroupHavingRecords' | translate) : ''}}">
+      <span data-ng-hide="groupSelected.id == ''" data-translate="">updateGroup</span>
+      <span data-ng-hide="groupSelected.id != ''" data-translate="">newGroup</span>
+      <span><strong>{{groupSelected.name}}</strong></span>
+      <div class="btn-toolbar"
+              data-ng-show="user.isAdministratorOrMore()">
+        <button type="button" class="btn btn-primary pull-right"
+          data-ng-disabled="!gnGroupEdit.$valid && !gnGroupEdit.dirty"
+          data-ng-click="saveGroup('#gn-group-edit', '#group-logo-upload')" id="gn-btn-group-save">
+          <i class="fa fa-save"></i>&nbsp;
+          <span data-translate="">saveGroup</span>
+        </button>
+        <!-- Desactivate the group delete button -->
+          <!--<button type="button" class="btn pull-right btn-danger"
             data-ng-disabled="searchResults.count > 0"
             data-ng-hide="groupSelected.id == ''"
             data-ng-click="deleteGroup(groupSelected.id)" id="gn-btn-group-delete">
             <i class="fa fa-times"></i>&nbsp;
             <span data-translate="">deleteGroup</span>
-          </button>
+          </button>-->
         </div>
       </div>
 
@@ -67,7 +69,8 @@
           <fieldset>
             <input type="hidden" name="id" data-ng-model="groupSelected.id"
               value="{{groupSelected.id}}"/>
-            <div data-ng-class="gnGroupEdit.name.$error.required ? 'has-error' : ''">
+            <!-- hide name edition div -->
+            <div data-ng-class="gnGroupEdit.name.$error.required ? 'has-error' : ''" style="visibility:hidden; height:5px;">
               <label class="control-label" data-translate="">groupName</label>
               <input type="text" id="groupname" name="name" class="form-control"
                      data-ng-model="groupSelected.name"
