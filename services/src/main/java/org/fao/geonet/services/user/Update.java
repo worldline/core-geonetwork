@@ -34,6 +34,7 @@ import org.fao.geonet.domain.Profile;
 import org.fao.geonet.domain.User;
 import org.fao.geonet.domain.UserGroup;
 import org.fao.geonet.domain.responses.OkResponse;
+import org.fao.geonet.kernel.security.cda.CdaAuthenticationProvider;
 import org.fao.geonet.repository.GroupRepository;
 import org.fao.geonet.repository.UserGroupRepository;
 import org.fao.geonet.repository.UserRepository;
@@ -212,6 +213,11 @@ public class Update {
 
         if (email != null) {
             user.getEmailAddresses().add(email);
+        }
+
+        // We have to set AuthType to CDA
+        if (user.getSecurity().getAuthType() == null) {
+            user.getSecurity().setAuthType(CdaAuthenticationProvider.CDA_FLAG);
         }
 
         // -- For adding new user
