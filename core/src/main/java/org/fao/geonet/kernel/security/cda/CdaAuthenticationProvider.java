@@ -53,7 +53,7 @@ import java.io.InputStreamReader;
 public class CdaAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider
         implements UserDetailsService {
 
-    private static final String CDA_FLAG = "CDA";
+    public static final String CDA_FLAG = "CDA";
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
@@ -156,7 +156,6 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
                             userRepository.saveAndFlush(user);
                         }
 
-                        user.setProfile(Profile.Administrator);
                         userRepository.saveAndFlush(user);
                         Log.warning(Log.JEEVES, "User found : " + user);
                         return user;
