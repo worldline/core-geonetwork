@@ -55,6 +55,8 @@ import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
+import org.fao.geonet.kernel.security.cda.CdaAuthenticationProvider;
+import org.fao.geonet.kernel.security.cda.CdaConfiguration;
 import org.fao.geonet.kernel.setting.SettingInfo;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.kernel.thumbnail.ThumbnailMaker;
@@ -64,6 +66,7 @@ import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.repository.MetadataRepository;
 import org.fao.geonet.repository.SettingRepository;
 import org.fao.geonet.repository.SourceRepository;
+import org.fao.geonet.repository.UserRepository;
 import org.fao.geonet.resources.Resources;
 import org.fao.geonet.services.config.LogUtils;
 import org.fao.geonet.services.metadata.format.Format;
@@ -96,6 +99,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import java.io.File;
@@ -448,6 +452,24 @@ public class Geonetwork implements ApplicationHandler {
         fillCaches(context);
 
         AbstractEntityListenerManager.setSystemRunning(true);
+
+        // Creating the atos user if doesn't exist
+        final ConfigurableApplicationContext applicationContext = ApplicationContextHolder.get();
+        UserRepository userRepository = applicationContext.getBean(UserRepository.class);
+        User user = userRepository.findOneByUsername("atos");
+
+        if (user == null)
+        {
+            user = new User();
+            user.setUsername("atos");
+            user.setProfile(Profile.Administrator);
+            user.setName("atos");
+            user.getSecurity().setAuthType(CdaAuthenticationProvider.CDA_FLAG);
+            userRepository.saveAndFlush(user);
+        }
+
+        userRepository.saveAndFlush(user);
+
         return gnContext;
     }
 
