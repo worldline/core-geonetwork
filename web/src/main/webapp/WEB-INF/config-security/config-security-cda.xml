@@ -19,6 +19,8 @@
 	<bean id="cdaConfiguration"
 		  class="org.fao.geonet.kernel.security.cda.CdaConfiguration">
 		<property name="uri" value="${cdaConfiguration.uri}" />
+		<property name="proxyUrl" value="${cdaConfiguration.proxyUrl}" />
+		<property name="proxyPort" value="${cdaConfiguration.proxyPort}" />
 	</bean>
 
 	<bean id="cdaAuthenticationProvider"

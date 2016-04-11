@@ -23,10 +23,14 @@
 package org.fao.geonet.kernel.security.cda;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.fao.geonet.ApplicationContextHolder;
 import org.fao.geonet.domain.Profile;
 import org.fao.geonet.domain.User;
@@ -85,10 +89,30 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
                 // Encoding of the username and password to base64
                 String auth = Base64.encodeBase64String((username + ':' + authenticationToken.getCredentials().toString()).getBytes());
 
-                HttpClient client = new DefaultHttpClient();
-
+                HttpClient client;
                 HttpPost request = new HttpPost(uri);
+
+                if(configuration.getProxyUrl() != null && !configuration.getProxyUrl().isEmpty()) {
+                    HttpHost proxy = new HttpHost(configuration.getProxyUrl(), configuration.getProxyPort(), "http");
+                    DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+                    client = HttpClients.custom()
+                        .setRoutePlanner(routePlanner)
+                        .build();
+
+
+                    RequestConfig config = RequestConfig.custom()
+                        .setProxy(proxy)
+                        .build();
+                    request.setConfig(config);
+                    Log.warning(Log.JEEVES, config.toString());
+                }else{
+                    client = new DefaultHttpClient();
+                }
+
                 request.addHeader("Authorization", "Basic " + auth);
+
+                Log.warning(Log.JEEVES, request.toString());
+
 
                 // Sending the request
                 HttpResponse response = client.execute(request);
@@ -111,6 +135,7 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
                     in.close();
 
                     String data = buffer.toString();
+                    Log.warning(Log.JEEVES, "Result of CDA call" + data);
 
                     if (data.equals("OK")) {
                         User user = userRepository.findOneByUsername(username);
@@ -133,7 +158,7 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
 
                         user.setProfile(Profile.Administrator);
                         userRepository.saveAndFlush(user);
-
+                        Log.warning(Log.JEEVES, "User found : " + user);
                         return user;
                     } else if (data.equals("BAD_CREDENTIALS")) {
                         throw new BadCredentialsException("Wrong credentials");
