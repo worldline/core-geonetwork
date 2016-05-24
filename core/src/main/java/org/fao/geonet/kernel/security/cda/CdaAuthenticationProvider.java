@@ -150,7 +150,7 @@ public class CdaAuthenticationProvider extends AbstractUserDetailsAuthentication
                             user = new User();
                             user.setUsername(username);
                             // We set a profile to registered user, admins will be manually designed
-                            user.setProfile(Profile.Administrator);
+                            user.setProfile(Profile.RegisteredUser);
                             user.setName(username);
                             user.getSecurity().setAuthType(CDA_FLAG);
                             userRepository.saveAndFlush(user);
